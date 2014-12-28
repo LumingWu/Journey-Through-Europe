@@ -1,0 +1,8 @@
+Luming
+Player
+0
+1
+Loser
+Player
+1
+0
