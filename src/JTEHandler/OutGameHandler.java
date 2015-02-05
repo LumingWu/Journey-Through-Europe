@@ -14,7 +14,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -30,16 +29,14 @@ public class OutGameHandler {
     private String _defaultImagePath;
     private String _pieceImagePath;
     private String _diceImagePath;
-
+    
     private int _cn;
     private int _mutiplier;
-    private AudioClip _cardmusic;
-
     public OutGameHandler(JTEUI ui) {
         _ui = ui;
         _gm = _ui.getGM();
-        _cardmusic = new AudioClip(getClass().getClassLoader()
-                .getResource("card.wav").toString());
+
+        
 
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         _defaultImagePath = props.getProperty(JTEPropertyType.DEFAULT_IMG_PATH);
@@ -131,7 +128,7 @@ public class OutGameHandler {
         ((Label) list2.get(1)).setGraphic(loadImage(_diceImagePath,
                 props.getPropertyOptionsList(JTEPropertyType.DICE_NAME_OPTIONS).get(_gm.getDice().getRoll() - 1)));
         ArrayList list3 = _ui.getEastElements();
-        ((Label) list3.get(2)).setText("Select City");
+                ((Label) list3.get(2)).setText("Select City");
     }
 
     public void playAnimation() {
@@ -140,7 +137,7 @@ public class OutGameHandler {
             ((Label) list.get(i)).setVisible(false);
         }
         Player _player = _gm.getPlayer();
-
+        
         PathTransition _pt;
         Path _path;
         LineTo _lt;
@@ -152,9 +149,9 @@ public class OutGameHandler {
         _pt.setDuration(Duration.millis(1000));
         _pt.setPath(_path);
         _pt.setCycleCount(1);
-
+        
         _cn = 0;
-        _mutiplier = 0;
+        _mutiplier=0;
         Label card = new Label();
         card.setGraphic(((Card) (_player.getHand().get(_cn))).getImage());
         ((StackPane) _ui.getStage().getScene().getRoot()).getChildren().add(card);
@@ -162,29 +159,27 @@ public class OutGameHandler {
         _pt.setNode(new Label());
         _pt.setOnFinished((ActionEvent event) -> {
             ((StackPane) _ui.getStage().getScene().getRoot()).getChildren().remove(1);
-            if (_cn < list.size()) {
-                ((Label) list.get(_cn)).setVisible(true);
-            }
+            if(_cn<list.size()){
+            ((Label) list.get(_cn)).setVisible(true);}
 
             if (_cn < _player.getHand().size()) {
                 Label card1 = new Label();
                 card1.setGraphic(((Card) (_player.getHand().get(_cn))).getImage());
                 ((StackPane) _ui.getStage().getScene().getRoot()).getChildren().add(card1);
-                if (_cn == 0) {
-                    _cn = -1;
-                    _mutiplier = 100;
+                if(_cn==0){
+                    _cn=-1;
+                    _mutiplier=100;
                 }
-                _lt.setY((_cn) * _mutiplier - 10);
-                if (_mutiplier == 125) {
-                    _mutiplier = 175;
+                _lt.setY((_cn) * _mutiplier-10);
+                if(_mutiplier==125){
+                    _mutiplier=175;
                 }
-                if (_mutiplier == 100) {
-                    _mutiplier = 125;
+                if(_mutiplier==100){
+                    _mutiplier=125;
                 }
-                if (_cn == -1) {
-                    _cn = 0;
+                if(_cn==-1){
+                    _cn=0;
                 }
-                _cardmusic.play();
                 _pt.setNode(card1);
                 _pt.play();
             }

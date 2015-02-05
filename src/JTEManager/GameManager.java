@@ -7,12 +7,14 @@ import JTEComponents.Player;
 import JTEGraphic.JTEUI;
 import java.util.ArrayList;
 import java.util.Collections;
+import javafx.animation.AnimationTimer;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public class GameManager {
 
     private JTEUI _ui;
+    private GameAI _AI;
 
     private Deck _deck;
     private Dice _dice;
@@ -20,10 +22,10 @@ public class GameManager {
 
     private int _playerTurn;
     private boolean _gameStarted;
-    
 
     private GameLoader _gl;
     private ArrayList<MediaPlayer> _musics;
+
     public GameManager(JTEUI ui) {
         _ui = ui;
         _gl = new GameLoader(this);
@@ -44,13 +46,14 @@ public class GameManager {
         _musics.add(new MediaPlayer(new Media(getClass().getClassLoader()
                 .getResource("Living Mice.mp3").toString())));
         for (int i = 0; i < _musics.size(); i++) {
-            _musics.get(i).setVolume(0.25);
-            _musics.get(i).setOnEndOfMedia(() -> {
-                for(int j=0;j<_musics.size();j++){
-                    _musics.get(j).stop();
+            _musics.get(i).setVolume(25);
+            _musics.get(i).setOnEndOfMedia(new Runnable() {
+                @Override
+                public void run() {
+                    Collections.shuffle(_musics);
+                    _musics.get(0).play();
                 }
-                Collections.shuffle(_musics);
-                _musics.get(0).play();
+
             });
         }
     }

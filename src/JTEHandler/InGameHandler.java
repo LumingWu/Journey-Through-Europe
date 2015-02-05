@@ -5,12 +5,13 @@ import JTEComponents.Player;
 import JTEGraphic.JTEUI;
 import JTEStart.Main.JTEPropertyType;
 import java.util.ArrayList;
-import javafx.animation.AnimationTimer;
 import javafx.animation.PathTransition;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -20,10 +21,9 @@ import properties_manager.PropertiesManager;
 public class InGameHandler {
 
     private JTEUI _ui;
+    private boolean _moreTurn;
     private int state;
     private ArrayList<AudioClip> _musics;
-    private long _current;
-    private AnimationTimer _timer;
     public InGameHandler(JTEUI ui) {
         _ui = ui;
         _musics = new ArrayList<AudioClip>();
@@ -31,29 +31,10 @@ public class InGameHandler {
                 .getResource("land.mp3").toString()));
         _musics.add(new AudioClip(getClass().getClassLoader()
                 .getResource("sail.mp3").toString()));
-        _musics.get(1).setVolume(0.5);
         _musics.add(new AudioClip(getClass().getClassLoader()
                 .getResource("fly.mp3").toString()));
-        _musics.add(new AudioClip(getClass().getClassLoader().getResource("cardreach.mp3").toString()));
-        _musics.add(new AudioClip(getClass().getClassLoader().getResource("win.wav").toString()));
-        _timer=new AnimationTimer(){
-            @Override
-            public void handle(long now) {
-                if(_current==0){
-                    _current=now;
-                }
-                
-                if((now-_current)/1000000000==1){
-                    _current=0;
-                    _ui.getGM().nextTurn();
-                    _timer.stop();
-                }
-            }
-        };
     }
-    public AnimationTimer getTimer(){
-        return _timer;
-    }
+
     public void respondSelectSector(String sector) {
         switch (sector) {
             case "AC14":
@@ -97,8 +78,15 @@ public class InGameHandler {
                         playPieceAnimation(currentCity.getX(), currentCity.getY(), city.getX(), city.getY());
                     } else {_ui.getGD().drawPlayer(_ui.getGM().getPlayer().getCity().getQuarter());
                         if (_ui.getGM().getPlayer().getStep() == 0) {
-                            _current=0;
-                            _timer.start();
+                            if (_moreTurn) {
+                                int random = (int) (Math.random() * 6) + 1;
+                                currentPlayer.setStep(random);
+                                ArrayList<Integer> history = _ui.getGM().getDice().getHistory();
+                                history.set(history.size() - 1, history.get(history.size() - 1) + random);
+                                _moreTurn = false;
+                            } else {
+                                _ui.getGM().nextTurn();
+                            }
                         }
                     }
                 }
@@ -114,8 +102,15 @@ public class InGameHandler {
                         playPieceAnimation(currentCity.getX(), currentCity.getY(), city.getX(), city.getY());
                     } else {_ui.getGD().drawPlayer(_ui.getGM().getPlayer().getCity().getQuarter());
                         if (_ui.getGM().getPlayer().getStep() == 0) {
-                            _current=0;
-                            _timer.start();
+                            if (_moreTurn) {
+                                int random = (int) (Math.random() * 6) + 1;
+                                currentPlayer.setStep(random);
+                                ArrayList<Integer> history = _ui.getGM().getDice().getHistory();
+                                history.set(history.size() - 1, history.get(history.size() - 1) + random);
+                                _moreTurn = false;
+                            } else {
+                                _ui.getGM().nextTurn();
+                            }
                         }
                     }
                 }
@@ -126,8 +121,15 @@ public class InGameHandler {
                     currentPlayer.setCity(city);
                     currentPlayer.setStep(0);
                     if (_ui.getGM().getPlayer().getStep() == 0) {
-                        _current=0;
-                        _timer.start();
+                            if (_moreTurn) {
+                                int random = (int) (Math.random() * 6) + 1;
+                                currentPlayer.setStep(random);
+                                ArrayList<Integer> history = _ui.getGM().getDice().getHistory();
+                                history.set(history.size() - 1, history.get(history.size() - 1) + random);
+                                _moreTurn = false;
+                            } else {
+                                _ui.getGM().nextTurn();
+                            }
                         }
                 }
             }
@@ -142,8 +144,15 @@ public class InGameHandler {
         currentPlayer.setStep(currentPlayer.getStep() - cost);
         checkCard(city);
         if (_ui.getGM().getPlayer().getStep() == 0) {
-            _current=0;
-            _timer.start();
+            if (_moreTurn) {
+                int random = (int) (Math.random() * 6) + 1;
+                currentPlayer.setStep(random);
+                ArrayList<Integer> history = _ui.getGM().getDice().getHistory();
+                history.set(history.size() - 1, history.get(history.size() - 1) + random);
+                _moreTurn = false;
+            } else {
+                _ui.getGM().nextTurn();
+            }
         }
         updateInfo(city);
     }
@@ -172,8 +181,15 @@ public class InGameHandler {
             ((StackPane) _ui.getStage().getScene().getRoot()).getChildren().remove(1);
 
             if (_ui.getGM().getPlayer().getStep() == 0) {
-                _current=0;
-                _timer.start();
+                if (_moreTurn) {
+                    int random = (int) (Math.random() * 6) + 1;
+                    _ui.getGM().getPlayer().setStep(random);
+                    ArrayList<Integer> history = _ui.getGM().getDice().getHistory();
+                    history.set(history.size() - 1, history.get(history.size() - 1) + random);
+                    _moreTurn = false;
+                } else {
+                    _ui.getGM().nextTurn();
+                }
             }
             if(_ui.getGM().getPlayer().getType().equals("Computer")){
                 _ui.getGD().drawQuarter(_ui.getGM().getPlayer().getCity().getQuarter());
@@ -221,7 +237,6 @@ public class InGameHandler {
             case 1: {
                 ArrayList list = _ui.getEastElements();
                 ((Label) list.get(2)).setText("Card Reached:" + "\n" + city.getName());
-                _musics.get(3).play();
                 break;
             }
             case 2: {
@@ -239,9 +254,12 @@ public class InGameHandler {
                             .get(0).getColor());
                 }
                 _ui.getOGH().respondSwitchScreen(JTEUI.JTEUIState.VIEW_WIN_STATE);
-                _musics.get(4).play();
                 break;
             }
         }
+    }
+
+    public void changeMoreTurn(boolean truth) {
+        _moreTurn = truth;
     }
 }

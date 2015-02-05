@@ -56,6 +56,13 @@ public class Dijkstra {
             }
             _vertices.get(i).adjacencies = Edges;
             _counter=0;
+            /*
+             for (Vertex v : _vertices) {
+             System.out.println("Distance from "+_vertices.get(0)+" to " + v + ": " + v.minDistance);
+             List<Vertex> path = getShortestPathTo(v);
+            
+             System.out.println("Path: " + path);
+             */
         }
 
     }

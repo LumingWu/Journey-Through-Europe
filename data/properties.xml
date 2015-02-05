@@ -1056,7 +1056,7 @@
         </property_options>
         <property_options name="CAGLIARI_SEA">
             <option>PALERMO</option>
-            <option>NAPOLI</option>
+            <option>BUDAPEST</option>
         </property_options>
         <property_options name="FIRENZE_LAND">
             <option>BOLOGNA</option>
@@ -1179,6 +1179,7 @@
         <property_options name="LYON_SEA">
         </property_options>
         <property_options name="STUTTGART_LAND">
+            <option>FIRENZE</option>
             <option>STRASBOURG</option>
             <option>MUNCHEN</option>
             <option>FRANKFURT</option>

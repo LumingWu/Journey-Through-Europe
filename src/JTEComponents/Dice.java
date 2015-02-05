@@ -13,6 +13,9 @@ public class Dice {
     }
     public void Roll(){
         int result=(int)(Math.random()*6)+1;
+        if(result==6){
+            _ui.getIGH().changeMoreTurn(true);
+        }
         _history.add(result);
     }
     public ArrayList<Integer> getHistory(){
